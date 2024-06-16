@@ -5,11 +5,9 @@ require 'vendor/autoload.php';
 use App\Models\User;
 use Medoo\Medoo;
 
-const DB_FILE_NAME = "storage/database.sqlite";
-
 $database = new Medoo([
     'type' => 'sqlite',
-    'database' => DB_FILE_NAME
+    'database' => 'storage/database.sqlite'
 ]);
 
 $database->query("CREATE TABLE IF NOT EXISTS users (
