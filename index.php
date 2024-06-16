@@ -20,7 +20,7 @@ $user = User::findByUsername($userName);
 if (!$user) {
     exit("User not found.\n");
 }
-if (md5($userPassword) !== $user->getPassword()) {
+if ($user->login($userPassword)) {
     exit("Wrong password.\n");
 }
 

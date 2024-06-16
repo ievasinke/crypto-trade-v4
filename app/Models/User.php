@@ -59,4 +59,9 @@ class User
         }
         return null;
     }
+
+    public function login(string $password): bool
+    {
+        return md5($password) === $this->password;
+    }
 }
