@@ -22,6 +22,16 @@ class SqliteServices
         $this->database->insert($tableName, $values);
     }
 
+    public function update(string $tableName, array $values, array $where): void
+    {
+        $this->database->update($tableName, $values, $where);
+    }
+
+    public function delete(string $tableName, array $where): void
+    {
+        $this->database->delete($tableName, $where);
+    }
+
     public function findByUserId(string $tableName, int $id): array
     {
         return $this->database->select($tableName, '*', ["user_id" => $id]) ?? [];
