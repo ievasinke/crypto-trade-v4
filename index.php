@@ -49,17 +49,15 @@ while (true) {
 
     switch ($action) {
         case 1: //Show list of top currencies
-            $client = new CoingeckoApiClient();
-            $currencies = $client->fetchCurrencyData();
-            (new CurrencyServices())->displayList($currencies);
-
+            (new CurrencyServices())->displayList();
             break;
         case 2: //Wallet
             $walletServices = new WalletServices();
             $wallets = $walletServices->getUserWallet($user->getId());
-
             break;
         case 3: //Buy
+            $walletServices = new WalletServices();
+            $walletServices->buy($user->getId());
 
             break;
         case 4: //Sell

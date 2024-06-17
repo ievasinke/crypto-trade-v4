@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Api\CoingeckoApiClient;
 use App\Models\Currency;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
@@ -10,13 +11,15 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CurrencyServices
 {
-    public static function displayList(array $cryptoCurrencies): void
+    public function displayList(): void
     {
+        $client = new CoingeckoApiClient();
+        $currencies = $client->fetchCurrencyData();
         $outputCrypto = new ConsoleOutput();
-        $tableCryptoCurrencies = new Table($outputCrypto);
-        $tableCryptoCurrencies
+        $tableCurrencies = new Table($outputCrypto);
+        $tableCurrencies
             ->setHeaders(['Index', 'Name', 'Symbol', 'Price']);
-        $tableCryptoCurrencies
+        $tableCurrencies
             ->setRows(array_map(function (int $index, Currency $cryptoCurrency): array {
                 return [
                     $index + 1,
@@ -27,8 +30,8 @@ class CurrencyServices
                         ['style' => new TableCellStyle(['align' => 'right',])]
                     ),
                 ];
-            }, array_keys($cryptoCurrencies), $cryptoCurrencies));
-        $tableCryptoCurrencies->setStyle('box-double');
-        $tableCryptoCurrencies->render();
+            }, array_keys($currencies), $currencies));
+        $tableCurrencies->setStyle('box-double');
+        $tableCurrencies->render();
     }
 }
