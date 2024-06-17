@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-use App\Api\CoingeckoApiClient;
 use App\Models\User;
 use App\Services\CurrencyServices;
 use App\Services\WalletServices;
@@ -52,13 +51,10 @@ while (true) {
             (new CurrencyServices())->displayList();
             break;
         case 2: //Wallet
-            $walletServices = new WalletServices();
-            $wallets = $walletServices->getUserWallet($user->getId());
+            (new WalletServices())->display($user->getId());
             break;
         case 3: //Buy
-            $walletServices = new WalletServices();
-            $walletServices->buy($user->getId());
-
+            (new WalletServices())->buy($user->getId());
             break;
         case 4: //Sell
 

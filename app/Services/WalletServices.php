@@ -4,10 +4,14 @@ namespace App\Services;
 
 use App\Api\CoingeckoApiClient;
 use App\Models\Wallet;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableCellStyle;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class WalletServices
 {
-    public function getUserWallet(int $userId): array
+    private function getUserWallet(int $userId): array
     {
         $database = new SqliteServices();
         $results = $database->findByUserId('wallets', $userId);
@@ -21,6 +25,44 @@ class WalletServices
             );
         }
         return $wallets;
+    }
+
+    public function display(int $userId): void
+    {
+        $wallets = $this->getUserWallet($userId);
+        $currencies = (new CoingeckoApiClient())->fetchCurrencyData();
+
+        $currentPrices = [];
+        foreach ($currencies as $currency) {
+            $currentPrices[$currency->getSymbol()] = $currency->getPrice();
+        }
+
+        $outputCrypto = new ConsoleOutput();
+        $tableCurrencies = new Table($outputCrypto);
+        $tableCurrencies
+            ->setHeaders(['Symbol', 'Amount', 'Average price', 'Profitability']);
+        $tableCurrencies
+            ->setRows(array_map(function (Wallet $wallet) use ($currentPrices): array {
+                $symbol = $wallet->getSymbol();
+                $currentPrice = $currentPrices[$symbol] ?? 0;
+
+                $profitability = $wallet->calculateProfitability($currentPrice);
+
+                return [
+                    $symbol,
+                    $wallet->getAmount(),
+                    new TableCell(
+                        number_format($wallet->getAveragePrice(), 2),
+                        ['style' => new TableCellStyle(['align' => 'right',])]
+                    ),
+                    new TableCell(
+                        number_format($profitability, 2) . "%",
+                        ['style' => new TableCellStyle(['align' => 'center',])]
+                    ),
+                ];
+            }, $wallets));
+        $tableCurrencies->setStyle('box-double');
+        $tableCurrencies->render();
     }
 
     public function buy(int $userId): void
