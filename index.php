@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 require_once 'vendor/autoload.php';
 
 use App\Api\CoingeckoApiClient;
 use App\Models\User;
+use App\Services\CurrencyServices;
 use App\Services\WalletServices;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -50,11 +51,13 @@ while (true) {
         case 1: //Show list of top currencies
             $client = new CoingeckoApiClient();
             $currencies = $client->fetchCurrencyData();
+            (new CurrencyServices())->displayList($currencies);
+
             break;
         case 2: //Wallet
             $walletServices = new WalletServices();
             $wallets = $walletServices->getUserWallet($user->getId());
-            
+
             break;
         case 3: //Buy
 
