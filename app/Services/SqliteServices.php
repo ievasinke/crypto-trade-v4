@@ -22,14 +22,14 @@ class SqliteServices
         $this->database->insert($tableName, $values);
     }
 
-    public function findByUserId(string $tableName, int $id)
+    public function findByUserId(string $tableName, int $id): array
     {
-        return $this->database->get($tableName, null, '*', ["user_id" => $id]);
+        return $this->database->select($tableName, '*', ["user_id" => $id]) ?? [];
     }
 
     public function findBy(string $tableName, string $column, string $value): array
     {
-        return $this->database->select($tableName, '*', [$column => $value]) ?? [];
+        return $this->database->select($tableName, "*", [$column => $value]) ?? [];
     }
 
 }

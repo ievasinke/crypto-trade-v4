@@ -4,6 +4,7 @@ require_once 'vendor/autoload.php';
 
 use App\Api\CoingeckoApiClient;
 use App\Models\User;
+use App\Services\WalletServices;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -20,7 +21,8 @@ $user = User::findByUsername($userName);
 if (!$user) {
     exit("User not found.\n");
 }
-if ($user->login($userPassword)) {
+
+if ($user->login($userPassword) === false) {
     exit("Wrong password.\n");
 }
 
@@ -50,7 +52,9 @@ while (true) {
             $currencies = $client->fetchCurrencyData();
             break;
         case 2: //Wallet
-
+            $walletServices = new WalletServices();
+            $wallets = $walletServices->getUserWallet($user->getId());
+            
             break;
         case 3: //Buy
 
