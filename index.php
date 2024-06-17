@@ -8,8 +8,6 @@ use App\Services\WalletServices;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-const DB_FILE_NAME = "storage/database.sqlite";
-
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 

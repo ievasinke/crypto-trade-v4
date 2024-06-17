@@ -13,7 +13,7 @@ class SqliteServices
     {
         $this->database = new Medoo([
             'type' => 'sqlite',
-            'database' => DB_FILE_NAME
+            'database' => 'storage/database.sqlite'
         ]);
     }
 

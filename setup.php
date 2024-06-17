@@ -13,7 +13,8 @@ $database = new Medoo([
 $database->query("CREATE TABLE IF NOT EXISTS users (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 username VARCHAR(32) NOT NULL,
-password VARCHAR(32) NOT NULL
+password VARCHAR(32) NOT NULL,
+balance REAL NOT NULL
 )");
 
 $database->query("CREATE TABLE IF NOT EXISTS wallets (
@@ -37,7 +38,7 @@ created_at TEXT NOT NULL,
 FOREIGN KEY (user_id) REFERENCES users(id)
 )");
 
-(new User("admin", md5('admin')))->add();
-(new User("Customer", md5('654321')))->add();
+(new User("admin", md5('admin'), 1000))->add();
+(new User("Customer", md5('654321'), 1000))->add();
 
 echo "Database schema initialized.\n";
