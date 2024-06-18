@@ -30,7 +30,6 @@ $database->query("CREATE TABLE IF NOT EXISTS transactions (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 user_id INTEGER NOT NULL,
 kind TEXT NOT NULL,
-name TEXT NOT NULL,
 symbol TEXT NOT NULL,
 price REAL NOT NULL,
 quantity REAL NOT NULL,

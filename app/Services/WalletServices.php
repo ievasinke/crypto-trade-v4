@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Api\CoingeckoApiClient;
+use App\Models\Currency;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
 use Symfony\Component\Console\Helper\Table;
@@ -74,6 +76,7 @@ class WalletServices
         (new CurrencyServices())->displayList();
         $index = (int)readline("Enter the index of the crypto currency to buy: ") - 1;
         $quantity = (float)readline("Enter the quantity: ");
+        $kind = 'buy';
 
         if (isset($currencies[$index])) {
             $currency = $currencies[$index];
@@ -128,7 +131,15 @@ class WalletServices
 
             $newBalance = $balance - $totalCost;
             $user->updateBalance($newBalance);
-            echo "You bought $quantity $symbol at $price each.\n";
+            (new TransactionServices())
+                ->log(
+                    $userId,
+                    $kind,
+                    $symbol,
+                    $price,
+                    $quantity
+                );
+            echo "You bought $quantity $symbol for \$$totalCost.\n";
             return;
         }
         echo "Invalid index.\n";
@@ -148,6 +159,7 @@ class WalletServices
 
         $symbol = strtoupper((string)readline("Enter the symbol of the currency: "));
         $quantity = (float)readline("Enter the quantity to sell: ");
+        $kind = 'sell';
 
         $currentPrices = [];
         foreach ($currencies as $currency) {
@@ -198,10 +210,20 @@ class WalletServices
                 ]
             );
         }
+
         $user = User::findById($userId);
         $newBalance = $user->getBalance() + $totalValue;
         $user->updateBalance($newBalance);
 
-        echo "You sold $symbol for \$$currentPrice each.\n";
+        (new TransactionServices())
+            ->log(
+                $userId,
+                $kind,
+                $symbol,
+                $currentPrice,
+                $quantity
+            );
+
+        echo "You sold $symbol for \$$totalValue.\n";
     }
 }
