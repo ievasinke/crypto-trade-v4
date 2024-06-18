@@ -68,8 +68,7 @@ class WalletServices
 
     public function buy(int $userId): void
     {
-        $client = new CoingeckoApiClient();
-        $currencies = $client->fetchCurrencyData();
+        $currencies = (new CoingeckoApiClient())->fetchCurrencyData();
         (new CurrencyServices())->displayList();
         $index = (int)readline("Enter the index of the crypto currency to buy: ") - 1;
         $quantity = (float)readline("Enter the quantity: ");
@@ -131,5 +130,76 @@ class WalletServices
             return;
         }
         echo "Invalid index.\n";
+    }
+
+    public function sell(int $userId): void
+    {
+        $currencies = (new CoingeckoApiClient())->fetchCurrencyData();
+        $wallets = $this->getUserWallet($userId);
+
+        if (count($wallets) === 0) {
+            echo "There are no items in your wallet.\n";
+            return;
+        }
+
+        $this->display($userId);
+
+        $symbol = strtoupper((string)readline("Enter the symbol of the currency: "));
+        $quantity = (float)readline("Enter the quantity to sell: ");
+
+        $currentPrices = [];
+        foreach ($currencies as $currency) {
+            $currentPrices[$currency->getSymbol()] = $currency->getPrice();
+        }
+
+        $wallet = null;
+
+        foreach ($wallets as $item) {
+            if ($item->getSymbol() === $symbol) {
+                $wallet = $item;
+                break;
+            }
+        }
+
+        if ($wallet === null) {
+            echo "There are no items in your wallet.\n";
+        }
+
+        if ($wallet->getAmount() < $quantity) {
+            echo "You have $quantity of \$$symbol to sell.\n";
+            return;
+        }
+
+        $currentPrice = $currentPrices[$symbol] ?? 0;
+        $totalValue = $quantity * $currentPrice;
+
+        $newAmount = $wallet->getAmount() - $quantity;
+        $database = new SqliteServices();
+
+        if ($newAmount > 0) {
+            $database->update(
+                'wallets',
+                [
+                    'amount' => $newAmount,
+                ],
+                [
+                    'user_id' => $userId,
+                    'symbol' => $symbol,
+                ]
+            );
+        } else {
+            $database->delete(
+                'wallets',
+                [
+                    'user_id' => $userId,
+                    'symbol' => $symbol,
+                ]
+            );
+        }
+        $user = User::findById($userId);
+        $newBalance = $user->getBalance() + $totalValue;
+        $user->updateBalance($newBalance);
+
+        echo "You sold $symbol for \$$currentPrice each.\n";
     }
 }

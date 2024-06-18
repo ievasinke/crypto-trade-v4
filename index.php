@@ -55,7 +55,7 @@ while (true) {
             (new WalletServices())->buy($user->getId());
             break;
         case 4: //Sell
-
+            (new WalletServices())->sell($user->getId());
             break;
         case 5: //Display transaction list
 
