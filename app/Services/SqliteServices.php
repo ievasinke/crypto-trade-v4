@@ -19,11 +19,7 @@ class SqliteServices
 
     public function create(string $tableName, array $values): void
     {
-        if ($this->database->insert($tableName, $values) === null) {
-            var_dump([$tableName, $values]);
-            echo "neizdevās";
-        }
-
+        $this->database->insert($tableName, $values) === null;
     }
 
     public function update(string $tableName, array $values, array $where): void
