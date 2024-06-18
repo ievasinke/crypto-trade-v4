@@ -64,6 +64,8 @@ class WalletServices
             }, $wallets));
         $tableCurrencies->setStyle('box-double');
         $tableCurrencies->render();
+        $total = number_format(User::findById($userId)->getBalance(), 2);
+        echo "You have \$$total in your wallet\n";
     }
 
     public function buy(int $userId): void
