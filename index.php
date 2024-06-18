@@ -4,6 +4,7 @@ require_once 'vendor/autoload.php';
 
 use App\Models\User;
 use App\Services\CurrencyServices;
+use App\Services\TransactionServices;
 use App\Services\WalletServices;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -58,7 +59,7 @@ while (true) {
             (new WalletServices())->sell($user->getId());
             break;
         case 5: //Display transaction list
-
+            (new TransactionServices())->display($user->getId());
             break;
         default:
             break;

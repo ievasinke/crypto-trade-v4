@@ -3,10 +3,9 @@
 namespace App\Services;
 
 use App\Api\CoingeckoApiClient;
-use App\Models\Currency;
-use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
+use Carbon\Carbon;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
@@ -87,7 +86,7 @@ class WalletServices
             $database = new SqliteServices();
 
             $user = User::findById($userId);
-            $balance = $user->getBalance();
+            $balance = number_format($user->getBalance(), 2);
 
             if ($balance < $totalCost) {
                 echo "You need \$$totalCost but you have \$$balance.\n";
@@ -137,7 +136,8 @@ class WalletServices
                     $kind,
                     $symbol,
                     $price,
-                    $quantity
+                    $quantity,
+                    Carbon::now()
                 );
             echo "You bought $quantity $symbol for \$$totalCost.\n";
             return;
@@ -185,7 +185,7 @@ class WalletServices
         }
 
         $currentPrice = $currentPrices[$symbol] ?? 0;
-        $totalValue = $quantity * $currentPrice;
+        $totalValue = number_format($quantity * $currentPrice, 2);
 
         $newAmount = $wallet->getAmount() - $quantity;
         $database = new SqliteServices();
@@ -221,7 +221,8 @@ class WalletServices
                 $kind,
                 $symbol,
                 $currentPrice,
-                $quantity
+                $quantity,
+                Carbon::now()
             );
 
         echo "You sold $symbol for \$$totalValue.\n";
