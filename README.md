@@ -15,24 +15,54 @@ APIs. You can view the top cryptocurrencies, buy and sell them using virtual mon
 
 ### Installation
 
-Clone the repository:  
-```  git clone https://github.com/ievasinke/crypto-trade-v4.git  ```  
-Navigate to the project directory:  
-```  cd crypto-trade-v4  ```  
-Install dependencies using Composer:  
-``` composer install  ```  
-Create a `.env` file in the root directory from `.env.example` file and add your API keys:  
+Clone the repository:
+
+``` sh 
+git clone https://github.com/ievasinke/crypto-trade-v4.git
+ ```  
+
+Navigate to the project directory:
+
+``` sh 
+cd crypto-trade-v4
+  ```  
+
+Install dependencies using Composer:
+
+``` sh
+composer install
+  ```  
+
+Create a `.env` file in the root directory from `.env.example` file and add your API keys:
+
+``` sh 
+cp .env.example .env
+ ```  
+
+Then, edit the `.env` file to include your API keys:
+
 ``` COINGECKO_API_KEY=your_api_key_here ```  
 ``` CRYPTO_API_KEY=your_api_key_here ```
 
 ### Usage
 
-#### Create Database Schema
+1. Create Database Schema
 
-To create database schema and create users in `setup.php`, use the following script:  
-``` php setup.php ```
+This project uses an SQLite database. To create the database schema and set up initial users, run the following script:
 
-#### Run the application
+```sh 
+php setup.php
+ ```
 
-To start the application, run:  
-``` php index.php ```
+2. Run the application
+
+To start the application, run:
+
+``` sh
+php index.php 
+```  
+
+### Database
+
+This application uses an SQLite database for storing user and transaction information. The database file is located
+at `storage/database.sqlite`.
