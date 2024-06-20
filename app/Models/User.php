@@ -101,6 +101,4 @@ class User
         }
         return null;
     }
-
-
 }

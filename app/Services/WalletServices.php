@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Api\CoingeckoApiClient;
 use App\Models\User;
 use App\Models\Wallet;
-use Carbon\Carbon;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
@@ -136,10 +135,9 @@ class WalletServices
                     $kind,
                     $symbol,
                     $price,
-                    $quantity,
-                    Carbon::now()
+                    $quantity
                 );
-            echo "You bought $quantity $symbol for \$$totalCost.\n";
+            echo "You bought $quantity $symbol for \$" . number_format($totalCost, 2) . ".\n";
             return;
         }
         echo "Invalid index.\n";
@@ -212,7 +210,7 @@ class WalletServices
         }
 
         $user = User::findById($userId);
-        $newBalance = $user->getBalance() + $totalValue;
+        $newBalance = $user->getBalance() + (float)$totalValue;
         $user->updateBalance($newBalance);
 
         (new TransactionServices())
@@ -221,8 +219,7 @@ class WalletServices
                 $kind,
                 $symbol,
                 $currentPrice,
-                $quantity,
-                Carbon::now()
+                $quantity
             );
 
         echo "You sold $symbol for \$$totalValue.\n";

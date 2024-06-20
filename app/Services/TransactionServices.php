@@ -27,12 +27,11 @@ class TransactionServices
     }
 
     public function log(
-        int     $userId,
-        string  $kind,
-        string  $symbol,
-        float   $price,
-        float   $quantity,
-        ?Carbon $created_at
+        int    $userId,
+        string $kind,
+        string $symbol,
+        float  $price,
+        float  $quantity
     ): void
     {
         (new SqliteServices())
