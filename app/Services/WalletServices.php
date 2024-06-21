@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Api\ApiClient;
 use App\Exceptions\HttpFailedRequestException;
-use App\Models\User;
 use App\Models\Wallet;
+use App\Repositories\UserRepository;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
@@ -14,16 +14,23 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 class WalletServices
 {
     private ApiClient $client;
+    private SqliteServices $database;
+    private UserRepository $userRepository;
 
-    public function __construct(ApiClient $client)
+    public function __construct(
+        ApiClient      $client,
+        SqliteServices $database,
+        UserRepository $userRepository
+    )
     {
         $this->client = $client;
+        $this->database = $database;
+        $this->userRepository = $userRepository;
     }
 
     private function getUserWallet(int $userId): array
     {
-        $database = new SqliteServices();
-        $results = $database->findByUserId('wallets', $userId);
+        $results = $this->database->findByUserId('wallets', $userId);
         $wallets = [];
         foreach ($results as $result) {
             if ((float)$result['amount'] > 0) {
@@ -79,7 +86,7 @@ class WalletServices
             }, $wallets));
         $tableCurrencies->setStyle('box-double');
         $tableCurrencies->render();
-        $total = number_format(User::findById($userId)->getBalance(), 2);
+        $total = number_format((float)$this->userRepository->findById($userId)->getBalance(), 2);
         echo "You have \$$total in your wallet\n";
     }
 
@@ -102,9 +109,7 @@ class WalletServices
             $symbol = $currency->getSymbol();
             $totalCost = $price * $quantity;
 
-            $database = new SqliteServices();
-
-            $user = User::findById($userId);
+            $user = $this->userRepository->findById($userId);
             $balance = $user->getBalance();
 
             if ($balance < $totalCost) {
@@ -125,7 +130,7 @@ class WalletServices
                 $newAmount = $existingWallet->getAmount() + $quantity;
                 $newAveragePrice = ($totalCost + $existingWallet->getAveragePrice() * $existingWallet->getAmount()) / $newAmount;
 
-                $database->update(
+                $this->database->update(
                     'wallets',
                     [
                         'amount' => $newAmount,
@@ -137,7 +142,7 @@ class WalletServices
                     ]
                 );
             } else {
-                $database->create(
+                $this->database->create(
                     'wallets',
                     [
                         'symbol' => $symbol,
@@ -148,7 +153,7 @@ class WalletServices
             }
 
             $newBalance = $balance - $totalCost;
-            $user->updateBalance($newBalance);
+            $this->userRepository->updateBalance($user, $newBalance);
             (new TransactionServices())
                 ->log(
                     $userId,
@@ -211,10 +216,9 @@ class WalletServices
         $totalValue = $quantity * $currentPrice;
 
         $newAmount = $wallet->getAmount() - $quantity;
-        $database = new SqliteServices();
 
         if ($newAmount > 0) {
-            $database->update(
+            $this->database->update(
                 'wallets',
                 [
                     'amount' => $newAmount,
@@ -225,7 +229,7 @@ class WalletServices
                 ]
             );
         } else {
-            $database->delete(
+            $this->database->delete(
                 'wallets',
                 [
                     'user_id' => $userId,
@@ -234,9 +238,9 @@ class WalletServices
             );
         }
 
-        $user = User::findById($userId);
+        $user = $this->userRepository->findById($userId);
         $newBalance = $user->getBalance() + $totalValue;
-        $user->updateBalance($newBalance);
+        $this->userRepository->updateBalance($user, $newBalance);
 
         (new TransactionServices())
             ->log(

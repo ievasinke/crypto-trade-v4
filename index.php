@@ -3,8 +3,9 @@
 require_once 'vendor/autoload.php';
 
 use App\Api\CoingeckoApiClient;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Services\CurrencyServices;
+use App\Services\SqliteServices;
 use App\Services\TransactionServices;
 use App\Services\WalletServices;
 use Symfony\Component\Console\Helper\Table;
@@ -12,12 +13,18 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+
 $client = new CoingeckoApiClient();
+$database = new SqliteServices();
+$userRepository = new UserRepository($database);
+$currencyServices = new CurrencyServices($client);
+$walletServices = new WalletServices($client, $database, $userRepository);
+$transactionServices = new TransactionServices();
 
 $userName = (string)readline("Enter your username: ");
 $userPassword = (string)readline("Enter your password: ");
 
-$user = User::findByUsername($userName);
+$user = $userRepository->findByUsername($userName);
 
 
 if (!$user) {
@@ -50,19 +57,19 @@ while (true) {
 
     switch ($action) {
         case 1: //Show list of top currencies
-            (new CurrencyServices($client))->displayList();
+            $currencyServices->displayList();
             break;
         case 2: //Wallet
-            (new WalletServices($client))->display($user->getId());
+            $walletServices->display($user->getId());
             break;
         case 3: //Buy
-            (new WalletServices($client))->buy($user->getId());
+            $walletServices->buy($user->getId());
             break;
         case 4: //Sell
-            (new WalletServices($client))->sell($user->getId());
+            $walletServices->sell($user->getId());
             break;
         case 5: //Display transaction list
-            (new TransactionServices())->display($user->getId());
+            $transactionServices->display($user->getId());
             break;
         default:
             break;
