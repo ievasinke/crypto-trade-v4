@@ -5,7 +5,6 @@ namespace App\Api;
 use App\Exceptions\HttpFailedRequestException;
 use App\Models\Currency;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use stdClass;
 
 class CoingeckoApiClient implements ApiClient
@@ -46,7 +45,7 @@ class CoingeckoApiClient implements ApiClient
             $currenciesData = $response->getBody()->getContents();
             $currencies = json_decode($currenciesData);
             return array_map('self::deserialize', $currencies);
-        } catch (RequestException $e) {
+        } catch (HttpFailedRequestException $e) {
             throw new HttpFailedRequestException(
                 'HTTP request failed: ' . $e->getMessage(),
                 $e->getCode(),

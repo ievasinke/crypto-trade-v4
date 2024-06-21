@@ -46,7 +46,7 @@ class CoinmarketApiClient implements ApiClient
             $currenciesData = $response->getBody()->getContents();
             $currencies = json_decode($currenciesData);
             return array_map('self::deserialize', $currencies->data);
-        } catch (RequestException $e) {
+        } catch (HttpFailedRequestException $e) {
             throw new HttpFailedRequestException(
                 'HTTP request failed: ' . $e->getMessage(),
                 $e->getCode(),

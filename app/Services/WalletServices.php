@@ -147,7 +147,7 @@ class WalletServices
                     ]);
             }
 
-            $newBalance = (float)$balance - $totalCost;
+            $newBalance = $balance - $totalCost;
             $user->updateBalance($newBalance);
             (new TransactionServices())
                 ->log(
