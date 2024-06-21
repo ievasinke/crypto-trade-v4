@@ -18,12 +18,14 @@ class WalletServices
         $results = $database->findByUserId('wallets', $userId);
         $wallets = [];
         foreach ($results as $result) {
-            $wallets[] = new Wallet(
-                $result['symbol'],
-                (float)$result['amount'],
-                (float)$result['average_price'],
-                $result['user_id']
-            );
+            if ((float)$result['amount'] > 0) {
+                $wallets[] = new Wallet(
+                    $result['symbol'],
+                    (float)$result['amount'],
+                    (float)$result['average_price'],
+                    $result['user_id']
+                );
+            }
         }
         return $wallets;
     }
@@ -85,10 +87,10 @@ class WalletServices
             $database = new SqliteServices();
 
             $user = User::findById($userId);
-            $balance = number_format($user->getBalance(), 2);
+            $balance = $user->getBalance();
 
             if ($balance < $totalCost) {
-                echo "You need \$$totalCost but you have \$$balance.\n";
+                echo "You need \$" . number_format($totalCost, 2) . " but you have \$" . number_format($balance, 2) . ".\n";
                 return;
             }
 
@@ -127,7 +129,7 @@ class WalletServices
                     ]);
             }
 
-            $newBalance = $balance - $totalCost;
+            $newBalance = (float)$balance - $totalCost;
             $user->updateBalance($newBalance);
             (new TransactionServices())
                 ->log(
@@ -183,7 +185,7 @@ class WalletServices
         }
 
         $currentPrice = $currentPrices[$symbol] ?? 0;
-        $totalValue = number_format($quantity * $currentPrice, 2);
+        $totalValue = $quantity * $currentPrice;
 
         $newAmount = $wallet->getAmount() - $quantity;
         $database = new SqliteServices();
@@ -210,7 +212,7 @@ class WalletServices
         }
 
         $user = User::findById($userId);
-        $newBalance = $user->getBalance() + (float)$totalValue;
+        $newBalance = $user->getBalance() + $totalValue;
         $user->updateBalance($newBalance);
 
         (new TransactionServices())
@@ -222,6 +224,6 @@ class WalletServices
                 $quantity
             );
 
-        echo "You sold $symbol for \$$totalValue.\n";
+        echo "You sold $symbol for \$" . number_format($totalValue, 2) . "\n";
     }
 }
