@@ -76,7 +76,6 @@ class User
             ["id" => $this->id]
         );
         $this->balance = $newBalance;
-        echo "Balance updated to $newBalance\n";
     }
 
     public static function findByUsername(string $username): ?User
