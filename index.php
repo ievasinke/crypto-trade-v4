@@ -2,6 +2,7 @@
 
 require_once 'vendor/autoload.php';
 
+use App\Api\CoingeckoApiClient;
 use App\Models\User;
 use App\Services\CurrencyServices;
 use App\Services\TransactionServices;
@@ -11,11 +12,13 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+$client = new CoingeckoApiClient();
 
 $userName = (string)readline("Enter your username: ");
 $userPassword = (string)readline("Enter your password: ");
 
 $user = User::findByUsername($userName);
+
 
 if (!$user) {
     exit("User not found.\n");
@@ -47,16 +50,16 @@ while (true) {
 
     switch ($action) {
         case 1: //Show list of top currencies
-            (new CurrencyServices())->displayList();
+            (new CurrencyServices($client))->displayList();
             break;
         case 2: //Wallet
-            (new WalletServices())->display($user->getId());
+            (new WalletServices($client))->display($user->getId());
             break;
         case 3: //Buy
-            (new WalletServices())->buy($user->getId());
+            (new WalletServices($client))->buy($user->getId());
             break;
         case 4: //Sell
-            (new WalletServices())->sell($user->getId());
+            (new WalletServices($client))->sell($user->getId());
             break;
         case 5: //Display transaction list
             (new TransactionServices())->display($user->getId());

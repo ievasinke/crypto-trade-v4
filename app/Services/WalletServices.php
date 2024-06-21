@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Api\CoingeckoApiClient;
+use App\Api\ApiClient;
+use App\Exceptions\HttpFailedRequestException;
 use App\Models\User;
 use App\Models\Wallet;
 use Symfony\Component\Console\Helper\Table;
@@ -12,6 +13,13 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class WalletServices
 {
+    private ApiClient $client;
+
+    public function __construct(ApiClient $client)
+    {
+        $this->client = $client;
+    }
+
     private function getUserWallet(int $userId): array
     {
         $database = new SqliteServices();
@@ -33,7 +41,12 @@ class WalletServices
     public function display(int $userId): void
     {
         $wallets = $this->getUserWallet($userId);
-        $currencies = (new CoingeckoApiClient())->fetchCurrencyData();
+
+        try {
+            $currencies = $this->client->fetchCurrencyData();
+        } catch (HttpFailedRequestException $e) {
+            $currencies = [];
+        }
 
         $currentPrices = [];
         foreach ($currencies as $currency) {
@@ -72,8 +85,13 @@ class WalletServices
 
     public function buy(int $userId): void
     {
-        $currencies = (new CoingeckoApiClient())->fetchCurrencyData();
-        (new CurrencyServices())->displayList();
+        try {
+            $currencies = $this->client->fetchCurrencyData();
+        } catch (HttpFailedRequestException $e) {
+            $currencies = [];
+        }
+
+        (new CurrencyServices($this->client))->displayList();
         $index = (int)readline("Enter the index of the crypto currency to buy: ") - 1;
         $quantity = (float)readline("Enter the quantity: ");
         $kind = 'buy';
@@ -147,7 +165,12 @@ class WalletServices
 
     public function sell(int $userId): void
     {
-        $currencies = (new CoingeckoApiClient())->fetchCurrencyData();
+        try {
+            $currencies = $this->client->fetchCurrencyData();
+        } catch (HttpFailedRequestException $e) {
+            $currencies = [];
+        }
+
         $wallets = $this->getUserWallet($userId);
 
         if (count($wallets) === 0) {

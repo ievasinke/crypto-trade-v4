@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Api\CoingeckoApiClient;
+use App\Api\ApiClient;
+use App\Exceptions\HttpFailedRequestException;
 use App\Models\Currency;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
@@ -11,10 +12,21 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CurrencyServices
 {
+    private ApiClient $client;
+
+    public function __construct(ApiClient $client)
+    {
+        $this->client = $client;
+    }
+
     public function displayList(): void
     {
-        $client = new CoingeckoApiClient();
-        $currencies = $client->fetchCurrencyData();
+        try {
+            $currencies = $this->client->fetchCurrencyData();
+        } catch (HttpFailedRequestException $e) {
+            $currencies = [];
+        }
+
         $outputCrypto = new ConsoleOutput();
         $tableCurrencies = new Table($outputCrypto);
         $tableCurrencies
