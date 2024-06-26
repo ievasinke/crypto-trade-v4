@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Api;
 
@@ -15,7 +15,11 @@ class CoinmarketApiClient implements ApiClient
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => 'https://pro-api.coinmarketcap.com/v1/'
+            'base_uri' => 'https://pro-api.coinmarketcap.com/v1/',
+            'headers' => [
+                'Accepts' => 'application/json',
+                'X-CMC_PRO_API_KEY' => $_ENV['CRYPTO_API_KEY']
+            ],
         ]);
     }
 
@@ -31,10 +35,6 @@ class CoinmarketApiClient implements ApiClient
                         'limit' => '20',
                         'convert' => 'USD'
                     ],
-                    'headers' => [
-                        'Accepts' => 'application/json',
-                        'X-CMC_PRO_API_KEY' => $_ENV['CRYPTO_API_KEY']
-                    ],
                 ]);
 
             if ($response->getStatusCode() !== 200) {
@@ -47,6 +47,33 @@ class CoinmarketApiClient implements ApiClient
             $currencies = json_decode($currenciesData);
             return array_map('self::deserialize', $currencies->data);
         } catch (HttpFailedRequestException $e) {
+            throw new HttpFailedRequestException(
+                'HTTP request failed: ' . $e->getMessage(),
+                $e->getCode(),
+                $e
+            );
+        }
+    }
+
+    public function searchCurrencyBySymbol(string $symbol): ?Currency
+    {
+        try {
+            $response = $this->client->request('GET', 'cryptocurrency/quotes/latest', [
+                'query' => ['symbol' => $symbol]
+            ]);
+
+            if ($response->getStatusCode() !== 200) {
+                throw new HttpFailedRequestException(
+                    'Failed to find currency with CoinMarket API. Status code: ' . $response->getStatusCode()
+                );
+            }
+            $currencyData = $response->getBody()->getContents();
+            $currency = json_decode($currencyData);
+            if (!isset($currency->data->$symbol)) {
+                return null;
+            }
+            return $this->deserialize($currency->data->$symbol);
+        } catch (RequestException $e) {
             throw new HttpFailedRequestException(
                 'HTTP request failed: ' . $e->getMessage(),
                 $e->getCode(),

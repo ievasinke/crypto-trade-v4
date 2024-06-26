@@ -12,4 +12,6 @@ interface ApiClient
      * @throws HttpFailedRequestException
      */
     public function fetchCurrencyData(): array;
+
+    public function searchCurrencyBySymbol(string $symbol): ?Currency;
 }
