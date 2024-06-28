@@ -18,11 +18,11 @@ class UserRepository
     public function add(User $user): void
     {
         $this->database->create(
-            "users",
+            'users',
             [
-                "username" => $user->getUsername(),
-                "password" => $user->getPassword(),
-                "balance" => $user->getBalance()
+                'username' => $user->getUsername(),
+                'password' => $user->getPassword(),
+                'balance' => $user->getBalance()
             ],
         );
     }
@@ -33,16 +33,16 @@ class UserRepository
     ): void
     {
         $this->database->update(
-            "users",
-            ["balance" => $newBalance],
-            ["id" => $user->getId()]
+            'users',
+            ['balance' => $newBalance],
+            ['id' => $user->getId()]
         );
         $user->setBalance($newBalance);
     }
 
     public function findByUsername(string $username): ?User
     {
-        $result = $this->database->findBy("users", "username", $username);
+        $result = $this->database->findBy('users', 'username', $username);
 
         if (count($result) === 1) {
             $userdata = reset($result);
@@ -59,8 +59,8 @@ class UserRepository
     public function findById(int $id): ?User
     {
         $result = $this->database->findBy(
-            "users",
-            "id",
+            'users',
+            'id',
             (string)$id
         );
 

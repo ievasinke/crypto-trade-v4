@@ -3,9 +3,12 @@
 namespace App\Services;
 
 use App\Api\ApiClient;
+use App\Api\CoinmarketApiClient;
 use App\Exceptions\HttpFailedRequestException;
 use App\Models\Wallet;
 use App\Repositories\UserRepository;
+use App\Repositories\WalletRepository;
+use Exception;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
@@ -13,41 +16,26 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class WalletServices
 {
-    private ApiClient $client;
-    private SqliteServices $database;
+//    private ApiClient $client;
+    private CoinmarketApiClient $client;
     private UserRepository $userRepository;
+    private WalletRepository $walletRepository;
+
 
     public function __construct(
-        ApiClient      $client,
-        SqliteServices $database,
-        UserRepository $userRepository
+        CoinmarketApiClient $client,
+        UserRepository      $userRepository,
+        WalletRepository    $walletRepository
     )
     {
         $this->client = $client;
-        $this->database = $database;
         $this->userRepository = $userRepository;
-    }
-
-    private function getUserWallet(int $userId): array
-    {
-        $results = $this->database->findByUserId('wallets', $userId);
-        $wallets = [];
-        foreach ($results as $result) {
-            if ((float)$result['amount'] > 0) {
-                $wallets[] = new Wallet(
-                    $result['symbol'],
-                    (float)$result['amount'],
-                    (float)$result['average_price'],
-                    $result['user_id']
-                );
-            }
-        }
-        return $wallets;
+        $this->walletRepository = $walletRepository;
     }
 
     public function display(int $userId): void
     {
-        $wallets = $this->getUserWallet($userId);
+        $wallets = (new WalletRepository($this->database))->getUserWallets($userId);
 
         try {
             $currencies = $this->client->fetchCurrencyData();
@@ -90,82 +78,61 @@ class WalletServices
         echo "You have \$$total in your wallet\n";
     }
 
-    public function buy(int $userId): void
+    public function buyCurrency(int $userId, string $symbol, int $quantity): string
     {
         try {
             $currencies = $this->client->fetchCurrencyData();
-        } catch (HttpFailedRequestException $e) {
-            $currencies = [];
+        } catch (Exception $e) {
+            throw new Exception('Failed to fetch currency data: ' . $e->getMessage());
         }
 
-        (new CurrencyServices($this->client))->displayList();
-        $index = (int)readline("Enter the index of the crypto currency to buy: ") - 1;
-        $quantity = (float)readline("Enter the quantity: ");
-        $kind = 'buy';
+        $currency = null;
 
-        if (isset($currencies[$index])) {
-            $currency = $currencies[$index];
-            $price = $currency->getPrice();
-            $symbol = $currency->getSymbol();
-            $totalCost = $price * $quantity;
-
-            $user = $this->userRepository->findById($userId);
-            $balance = $user->getBalance();
-
-            if ($balance < $totalCost) {
-                echo "You need \$" . number_format($totalCost, 2) . " but you have \$" . number_format($balance, 2) . ".\n";
-                return;
+        foreach ($currencies as $item) {
+            if ($item->getSymbol() === strtoupper($symbol)) {
+                $currency = $item;
+                break;
             }
-
-            $existingWallets = $this->getUserWallet($userId);
-            $existingWallet = null;
-
-            foreach ($existingWallets as $wallet) {
-                if ($wallet->getSymbol() === $symbol) {
-                    $existingWallet = $wallet;
-                    break;
-                }
-            }
-            if ($existingWallet) {
-                $newAmount = $existingWallet->getAmount() + $quantity;
-                $newAveragePrice = ($totalCost + $existingWallet->getAveragePrice() * $existingWallet->getAmount()) / $newAmount;
-
-                $this->database->update(
-                    'wallets',
-                    [
-                        'amount' => $newAmount,
-                        'average_price' => $newAveragePrice,
-                    ],
-                    [
-                        'user_id' => $userId,
-                        'symbol' => $symbol,
-                    ]
-                );
-            } else {
-                $this->database->create(
-                    'wallets',
-                    [
-                        'symbol' => $symbol,
-                        'amount' => $quantity,
-                        'average_price' => $price,
-                        'user_id' => $userId,
-                    ]);
-            }
-
-            $newBalance = $balance - $totalCost;
-            $this->userRepository->updateBalance($user, $newBalance);
-            (new TransactionServices())
-                ->log(
-                    $userId,
-                    $kind,
-                    $symbol,
-                    $price,
-                    $quantity
-                );
-            echo "You bought $quantity $symbol for \$" . number_format($totalCost, 2) . ".\n";
-            return;
         }
-        echo "Invalid index.\n";
+
+        if (!$currency) {
+            throw new Exception('Invalid currency symbol.');
+        }
+
+        $price = $currency->getPrice();
+        $totalCost = $price * $quantity;
+
+        $user = $this->userRepository->findById($userId);
+        $balance = $user->getBalance();
+
+        if ($balance < $totalCost) {
+            throw new Exception('Your balance is too low.');
+        }
+
+        $existingWallets = $this->walletRepository->getUserWallets($userId);
+        $existingWallet = null;
+
+        foreach ($existingWallets as $wallet) {
+            if ($wallet->getSymbol() === $symbol) {
+                $existingWallet = $wallet;
+                break;
+            }
+        }
+
+        if ($existingWallet) {
+            $newAmount = $existingWallet->getAmount() + $quantity;
+            $newAveragePrice = ($totalCost + $existingWallet->getAveragePrice() * $existingWallet->getAmount()) / $newAmount;
+            $this->walletRepository->updateWallet($userId, $symbol, $newAmount, $newAveragePrice);
+        } else {
+            $this->walletRepository->createWallet($symbol, $quantity, $price, $userId);
+        }
+
+        $newBalance = $balance - $totalCost;
+        $this->userRepository->updateBalance($user, $newBalance);
+
+        (new TransactionServices())->log($userId, 'buy', $symbol, $price, $quantity);
+
+        return 'You have successfully bought the ' . $symbol . ' coins for $' . number_format($totalCost, 2);
     }
 
     public function sell(int $userId): void
@@ -176,7 +143,7 @@ class WalletServices
             $currencies = [];
         }
 
-        $wallets = $this->getUserWallet($userId);
+        $wallets = (new WalletRepository($this->database))->getUserWallets($userId);
 
         if (count($wallets) === 0) {
             echo "There are no items in your wallet.\n";
