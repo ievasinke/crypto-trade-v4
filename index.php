@@ -11,7 +11,7 @@ $user = (new UserRepository(new SqliteServices()))->findByUsername('Customer');
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-$loader = new FilesystemLoader(__DIR__ . '/app/Templates');
+$loader = new FilesystemLoader(__DIR__ . '/app/templates');
 $twig = new Environment($loader, [
     'cache' => false,
 ]);
