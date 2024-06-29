@@ -5,6 +5,9 @@ require_once 'vendor/autoload.php';
 use App\Repositories\UserRepository;
 use App\Services\SqliteServices;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
 $user = (new UserRepository(new SqliteServices()))->findByUsername('Customer');
@@ -22,8 +25,6 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
         [$method, $path, $controller] = $route;
         $r->addRoute($method, $path, $controller);
     }
-//    $r->addRoute('POST', '/wallets', [App\Controllers\CurrencyController::class, 'sell']);
-//    $r->addRoute('GET', '/transactions', [App\Controllers\CurrencyController::class, 'change']);
 });
 
 // Fetch method and URI from somewhere
@@ -51,7 +52,14 @@ switch ($routeInfo[0]) {
         [$controller, $method] = $handler;
         // ... call $handler with $vars
         $controllerInstance = new $controller($twig);
-        $items = $controllerInstance->$method(...array_values($vars));
-        echo $items;
+
+        /** @var \App\Response $response */
+        $response = $controllerInstance->$method(...array_values($vars));
+
+        try {
+            echo $twig->render($response->getTemplate() . '.html.twig', $response->getData());
+        } catch (LoaderError|RuntimeError|SyntaxError $e) {
+            echo ':?';
+        }
         break;
 }

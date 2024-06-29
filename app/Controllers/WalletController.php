@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Api\CoinmarketApiClient;
 use App\Repositories\UserRepository;
 use App\Repositories\WalletRepository;
+use App\Response;
 use App\Services\SqliteServices;
 use App\Services\WalletServices;
 use Exception;
@@ -29,7 +30,7 @@ class WalletController
         $this->twig = $twig;
     }
 
-    public function buy(): string // /currency/buy
+    public function buy(): Response // /currency/buy
     {
         $user = $this->userRepository->findByUsername('Customer');
         $userId = $user->getId();
@@ -38,21 +39,21 @@ class WalletController
         $quantity = (int)$_POST['quantity'] ?? null;
 
         if ($symbol === null || $quantity === null) {
-            return $this->twig->render(
-                'error.html.twig',
+            return new Response(
+                'error',
                 ['message' => 'Invalid input.']
             );
         }
 
         try {
             $message = $this->walletServices->buyCurrency($userId, $symbol, $quantity);
-            return $this->twig->render(
-                'success.html.twig',
+            return new Response(
+                'success',
                 ['message' => $message]
             );
         } catch (Exception $e) {
-            return $this->twig->render(
-                'error.html.twig',
+            return new Response(
+                'error',
                 ['message' => $e->getMessage()]
             );
         }

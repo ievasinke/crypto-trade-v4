@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Api\CoinmarketApiClient;
+use App\Response;
 use Exception;
 use Twig\Environment;
 
@@ -15,36 +16,36 @@ class CurrencyController
         $this->twig = $twig;
     }
 
-    public function index(): string // /index
+    public function index(): Response // /index
     {
         try {
             $topCurrencies = (new CoinmarketApiClient())->fetchCurrencyData();
-            return $this->twig->render(
-                'index.html.twig',
+            return new Response(
+                'index',
                 ['currencies' => $topCurrencies]
             );
         } catch (Exception $e) {
-            return $this->twig->render(
-                'error.html.twig',
+            return new Response(
+                'error',
                 ['message' => 'Failed to fetch currencies']
             );
         }
     }
 
-    public function show(string $symbol): string // /currencies/{symbol}
+    public function show(string $symbol): Response // /currencies/{symbol}
     {
         try {
             $currency = (new CoinmarketApiClient())->searchCurrencyBySymbol($symbol);
             if ($currency === null) {
                 throw new Exception('Currency not found for symbol ' . $symbol);
             }
-            return $this->twig->render('show.html.twig', ['currency' => $currency]);
+            return new Response('show', ['currency' => $currency]);
         } catch (Exception $e) {
-            return $this->twig->render('error.html.twig', ['message' => $e->getMessage()]);
+            return new Response('error', ['message' => $e->getMessage()]);
         }
     }
 
-    public function search(): ?string // /currency/search
+    public function search(): ?Response // /currency/search
     {
         try {
             if (isset($_POST['symbol'])) {
@@ -57,7 +58,7 @@ class CurrencyController
             header("Location: /currencies/" . $symbol, true, 301);
             return null;
         } catch (Exception $e) {
-            return $this->twig->render('error.html.twig', ['message' => $e->getMessage()]);
+            return new Response('error', ['message' => $e->getMessage()]);
         }
     }
 
