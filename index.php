@@ -11,16 +11,17 @@ $user = (new UserRepository(new SqliteServices()))->findByUsername('Customer');
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-$loader = new FilesystemLoader(__DIR__ . '/app/templates');
+$loader = new FilesystemLoader(__DIR__ . '/templates');
 $twig = new Environment($loader, [
     'cache' => false,
 ]);
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/index', [App\Controllers\CurrencyController::class, 'index']);
-    $r->addRoute('GET', '/currencies/{symbol}', [App\Controllers\CurrencyController::class, 'show']);
-    $r->addRoute('POST', '/currency/search', [App\Controllers\CurrencyController::class, 'search']);
-    $r->addRoute('POST', '/currency/buy', [App\Controllers\WalletController::class, 'buy']);
+    $routes = include('routes.php');
+    foreach ($routes as $route) {
+        [$method, $path, $controller] = $route;
+        $r->addRoute($method, $path, $controller);
+    }
 //    $r->addRoute('POST', '/wallets', [App\Controllers\CurrencyController::class, 'sell']);
 //    $r->addRoute('GET', '/transactions', [App\Controllers\CurrencyController::class, 'change']);
 });
