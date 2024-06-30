@@ -6,6 +6,7 @@ use App\Api\ApiClient;
 use App\Api\CoinmarketApiClient;
 use App\Exceptions\HttpFailedRequestException;
 use App\Models\Wallet;
+use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\WalletRepository;
 use Exception;
@@ -18,6 +19,7 @@ class WalletServices
 {
 //    private ApiClient $client;
     private CoinmarketApiClient $client;
+    private SqliteServices $database;
     private UserRepository $userRepository;
     private WalletRepository $walletRepository;
 
@@ -28,6 +30,7 @@ class WalletServices
         WalletRepository    $walletRepository
     )
     {
+        $this->database = new SqliteServices();
         $this->client = $client;
         $this->userRepository = $userRepository;
         $this->walletRepository = $walletRepository;
@@ -102,7 +105,7 @@ class WalletServices
         $price = $currency->getPrice();
         $totalCost = $price * $quantity;
 
-        $user = $this->userRepository->findById($userId);
+        $user = $this->userRepository->findById($userId); //TODO remove
         $balance = $user->getBalance();
 
         if ($balance < $totalCost) {
@@ -130,7 +133,7 @@ class WalletServices
         $newBalance = $balance - $totalCost;
         $this->userRepository->updateBalance($user, $newBalance);
 
-        (new TransactionServices())->log($userId, 'buy', $symbol, $price, $quantity);
+        (new TransactionRepository($this->database))->log($userId, 'buy', $symbol, $price, $quantity);
 
         return 'You have successfully bought the ' . $symbol . ' coins for $' . number_format($totalCost, 2);
     }

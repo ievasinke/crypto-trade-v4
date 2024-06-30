@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
+use App\Services\SqliteServices;
 use App\Repositories\TransactionRepository;
 
 class TransactionServices
 {
     private TransactionRepository $transactionRepository;
 
-    public function __construct(TransactionRepository $transactionRepository)
+    public function __construct()
     {
-        $this->transactionRepository = $transactionRepository;
+        $database = new SqliteServices();
+        $this->transactionRepository = new TransactionRepository($database);
     }
 
     public function getTransactions(): array

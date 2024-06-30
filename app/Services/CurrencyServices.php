@@ -2,48 +2,39 @@
 
 namespace App\Services;
 
-use App\Api\ApiClient;
+use App\Api\CoinmarketApiClient;
 use App\Exceptions\HttpFailedRequestException;
 use App\Models\Currency;
-use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableCell;
-use Symfony\Component\Console\Helper\TableCellStyle;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Exception;
 
 class CurrencyServices
 {
-    private ApiClient $client;
+    private CoinmarketApiClient $client;
 
-    public function __construct(ApiClient $client)
+    public function __construct(CoinmarketApiClient $client)
     {
         $this->client = $client;
     }
 
-    public function displayList(): void
+    public function fetchCurrencies(): array
     {
         try {
-            $currencies = $this->client->fetchCurrencyData();
+            return $this->client->fetchCurrencyData();
         } catch (HttpFailedRequestException $e) {
-            $currencies = [];
+            throw new Exception('Failed to fetch currencies', 0, $e);
         }
+    }
 
-        $outputCrypto = new ConsoleOutput();
-        $tableCurrencies = new Table($outputCrypto);
-        $tableCurrencies
-            ->setHeaders(['Index', 'Name', 'Symbol', 'Price']);
-        $tableCurrencies
-            ->setRows(array_map(function (int $index, Currency $cryptoCurrency): array {
-                return [
-                    $index + 1,
-                    $cryptoCurrency->getName(),
-                    $cryptoCurrency->getSymbol(),
-                    new TableCell(
-                        number_format($cryptoCurrency->getPrice(), 2),
-                        ['style' => new TableCellStyle(['align' => 'right',])]
-                    ),
-                ];
-            }, array_keys($currencies), $currencies));
-        $tableCurrencies->setStyle('box-double');
-        $tableCurrencies->render();
+    public function searchCurrency(string $symbol): Currency
+    {
+        try {
+            $currency = $this->client->searchCurrencyBySymbol($symbol);
+            if ($currency === null) {
+                throw new Exception('Currency not found for symbol ' . $symbol);
+            }
+            return $currency;
+        } catch (HttpFailedRequestException $e) {
+            throw new Exception('Failed to search currency', 0, $e);
+        }
     }
 }

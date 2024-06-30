@@ -3,19 +3,24 @@
 namespace App\Controllers;
 
 use App\Api\CoinmarketApiClient;
+use App\Services\CurrencyServices;
 use App\Response;
 use Exception;
 
 class CurrencyController
 {
+    private CurrencyServices $currencyServices;
+
     public function __construct()
     {
+        $client = new CoinmarketApiClient();
+        $this->currencyServices = new CurrencyServices($client);
     }
 
     public function index(): Response // /index
     {
         try {
-            $topCurrencies = (new CoinmarketApiClient())->fetchCurrencyData();
+            $topCurrencies = $this->currencyServices->fetchCurrencies();
             return new Response(
                 'currencies/index',
                 ['currencies' => $topCurrencies]
@@ -31,10 +36,7 @@ class CurrencyController
     public function show(string $symbol): Response // /currencies/{symbol}
     {
         try {
-            $currency = (new CoinmarketApiClient())->searchCurrencyBySymbol($symbol);
-            if ($currency === null) {
-                throw new Exception('Currency not found for symbol ' . $symbol);
-            }
+            $currency = $this->currencyServices->searchCurrency($symbol);
             return new Response('currencies/show', ['currency' => $currency]);
         } catch (Exception $e) {
             return new Response('error', ['message' => $e->getMessage()]);
@@ -46,16 +48,14 @@ class CurrencyController
         try {
             if (isset($_POST['symbol'])) {
                 $symbol = $_POST['symbol'];
+            } else {
+                throw new Exception('Symbol not provided');
             }
-            $currency = (new CoinmarketApiClient())->searchCurrencyBySymbol($symbol);
-            if ($currency === null) {
-                throw new Exception('Currency not found for symbol ' . $symbol);
-            }
+//            $currency = $this->currencyServices->searchCurrency($symbol);
             header("Location: /currencies/" . $symbol, true, 301);
             return null;
         } catch (Exception $e) {
             return new Response('error', ['message' => $e->getMessage()]);
         }
     }
-
 }

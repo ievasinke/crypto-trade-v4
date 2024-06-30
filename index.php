@@ -51,7 +51,7 @@ switch ($routeInfo[0]) {
         $vars = $routeInfo[2];
         [$controller, $method] = $handler;
         // ... call $handler with $vars
-        $controllerInstance = new $controller($twig);
+        $controllerInstance = new $controller();
 
         /** @var \App\Response $response */
         $response = $controllerInstance->$method(...array_values($vars));

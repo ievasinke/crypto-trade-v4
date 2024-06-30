@@ -30,7 +30,7 @@ class WalletController
 
     public function buy(): Response // /currency/buy
     {
-        $user = $this->userRepository->findByUsername('Customer');
+        $user = $this->userRepository->findByUsername('Customer'); //TODO remove
         $userId = $user->getId();
 
         $symbol = (string)$_POST['symbol'] ?? null;
