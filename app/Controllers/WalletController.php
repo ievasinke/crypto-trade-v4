@@ -17,17 +17,15 @@ class WalletController
     private SqliteServices $database;
     private UserRepository $userRepository;
     private WalletRepository $walletRepository;
-    private Environment $twig;
     private WalletServices $walletServices;
 
-    public function __construct(Environment $twig)
+    public function __construct()
     {
         $this->client = new CoinmarketApiClient();
         $this->database = new SqliteServices();
         $this->userRepository = new UserRepository($this->database);
         $this->walletRepository = new WalletRepository($this->database);
         $this->walletServices = new WalletServices($this->client, $this->userRepository, $this->walletRepository);
-        $this->twig = $twig;
     }
 
     public function buy(): Response // /currency/buy

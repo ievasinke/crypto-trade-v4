@@ -1,7 +1,7 @@
 <form action="/currency/buy" method="POST">
     <div>
         <label for="symbol">Currency symbol: </label>
-        <input type="text" id="symbol" name="symbol" required>
+        <input type="text" id="symbol" name="symbol" value="{{ searchedSymbol|default('') }}" required>
     </div>
     <div>
         <label for="quantity">Quantity: </label>

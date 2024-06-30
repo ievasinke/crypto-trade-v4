@@ -1,4 +1,4 @@
-{% include 'header.html.twig' %}
+{% include 'layouts/app.html.twig' %}
 <body>
 <h1>Currencies</h1>
 
@@ -13,9 +13,10 @@
     <tbody>
     {% for currency in currencies %}
         <tr>
-            <td>{{ currency.getName() }}</td>
-            <td>{{ currency.getSymbol() }}</td>
-            <td>{{ currency.getPrice()|number_format(2, '.', ' ') }}</td>
+
+            <td><a href="/currencies/{{ currency.symbol }}">{{ currency.name }}</a></td>
+            <td><a href="/currencies/{{ currency.symbol }}">{{ currency.symbol }}</a></td>
+            <td>{{ currency.price|number_format(2, '.', ' ') }}</td>
         </tr>
     {% endfor %}
     </tbody>
@@ -31,7 +32,7 @@
         <input type="text" id="symbol" name="symbol" required>
     </div>
     <button type="submit">Search</button>
-</form>
+    </td>
 
 </body>
 </html>

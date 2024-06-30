@@ -5,15 +5,11 @@ namespace App\Controllers;
 use App\Api\CoinmarketApiClient;
 use App\Response;
 use Exception;
-use Twig\Environment;
 
 class CurrencyController
 {
-    private Environment $twig;
-
-    public function __construct(Environment $twig)
+    public function __construct()
     {
-        $this->twig = $twig;
     }
 
     public function index(): Response // /index
@@ -21,7 +17,7 @@ class CurrencyController
         try {
             $topCurrencies = (new CoinmarketApiClient())->fetchCurrencyData();
             return new Response(
-                'index',
+                'currencies/index',
                 ['currencies' => $topCurrencies]
             );
         } catch (Exception $e) {
@@ -39,7 +35,7 @@ class CurrencyController
             if ($currency === null) {
                 throw new Exception('Currency not found for symbol ' . $symbol);
             }
-            return new Response('show', ['currency' => $currency]);
+            return new Response('currencies/show', ['currency' => $currency]);
         } catch (Exception $e) {
             return new Response('error', ['message' => $e->getMessage()]);
         }
