@@ -1,0 +1,29 @@
+{% include 'layouts/app.html.twig' %}
+
+<body>
+<h1>Transactions</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Kind</th>
+        <th>Symbol</th>
+        <th>Price</th>
+        <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for transaction in transactions %}
+        <tr>
+
+            <td>{{ transaction.kind }}</td>
+            <td>{{ transaction.symbol }}</td>
+            <td>${{ transaction.price|number_format(2, '.', ' ') }}</td>
+            <td>{{ transaction.quantity }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

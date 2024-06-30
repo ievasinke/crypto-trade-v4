@@ -6,5 +6,5 @@ return [
     ['POST', '/currency/search', [App\Controllers\CurrencyController::class, 'search']],
     ['POST', '/currency/buy', [App\Controllers\WalletController::class, 'buy']],
 //    ['POST', '/wallets', [App\Controllers\CurrencyController::class, 'sell']],
-//    ['GET', '/transactions', [App\Controllers\CurrencyController::class, 'change']]
+    ['GET', '/transactions', [App\Controllers\TransactionController::class, 'index']]
 ];
