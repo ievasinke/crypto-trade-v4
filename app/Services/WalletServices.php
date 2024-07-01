@@ -54,6 +54,9 @@ class WalletServices
         if (!$currency) {
             throw new Exception('Invalid currency symbol.');
         }
+        if ($quantity < 0) {
+            throw new Exception('Invalid currency quantity.');
+        }
 
         $price = $currency->getPrice();
         $totalCost = $price * $quantity;
@@ -106,6 +109,10 @@ class WalletServices
             if ($wallet->getSymbol() === $symbol) {
                 $existingWallet = $wallet;
             }
+        }
+
+        if ($quantity < 0) {
+            throw new Exception('Invalid currency quantity.');
         }
 
         if (!$existingWallet || $existingWallet->getAmount() < $quantity) {
