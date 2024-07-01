@@ -25,7 +25,13 @@ Navigate to the project directory:
 
 ``` sh 
 cd crypto-trade-v4
-  ```  
+  ```
+
+Then, run the following command:
+
+``` sh 
+git checkout v5
+  ```
 
 Install dependencies using Composer:
 
@@ -48,21 +54,18 @@ Then, edit the `.env` file to include your API keys:
 
 1. Create Database Schema
 
-This project uses an SQLite database. To create the database schema and set up initial users, run the following script:
-
-```sh 
-php setup.php
- ```
+This project uses an SQLite database.  
+The database schema is defined and a sample/demo file is available for you to use.  
 
 2. Run the application
 
 To start the application, run:
 
 ``` sh
-php index.php 
+php -S localhost:8000  
 ```  
 
 ### Database
 
-This application uses an SQLite database for storing user and transaction information. The database file is located
+This application uses an SQLite database for storing user, wallet and transaction information. The database file is located
 at `storage/database.sqlite`.
