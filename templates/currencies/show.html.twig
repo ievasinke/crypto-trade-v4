@@ -1,13 +1,13 @@
 {% include 'layouts/app.html.twig' %}
-<body>
-<h1>Currency</h1>
-<h1>Currency Details</h1>
-<p>Name: {{ currency.getName() }}</p>
-<p>Symbol: {{ currency.getSymbol() }}</p>
-<p>Price: {{ currency.getPrice()|number_format(2, '.', ' ') }}</p>
 
-<h2>Buy Currency</h2>
-{% include 'buy.html.twig' %}
+{% block content %}
+    <h1 class="text-2xl font-bold">Currency Details</h1>
+    <p>Name: {{ currency.name }}</p>
+    <p>Symbol: {{ currency.symbol }}</p>
+    <p>Price: {{ currency.price|number_format(2, '.', ' ') }}</p>
 
-</body>
-</html>
+    <h2 class="text-xl font-bold">Buy Currency</h2>
+    {% include 'wallets/buy.html.twig' %}
+    <h2 class="text-xl font-bold">Sell Currency</h2>
+    {% include 'wallets/sell.html.twig' %}
+{% endblock %}

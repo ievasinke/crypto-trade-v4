@@ -1,29 +1,26 @@
-{% include 'layouts/app.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-<body>
-<h1>Transactions</h1>
+{% block content %}
+    <h1 class="text-2xl font-bold">Transactions</h1>
 
-<table>
-    <thead>
-    <tr>
-        <th>Kind</th>
-        <th>Symbol</th>
-        <th>Price</th>
-        <th>Quantity</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for transaction in transactions %}
+    <table class="border-separate border border-slate-550">
+        <thead>
         <tr>
-
-            <td>{{ transaction.kind }}</td>
-            <td>{{ transaction.symbol }}</td>
-            <td>${{ transaction.price|number_format(2, '.', ' ') }}</td>
-            <td>{{ transaction.quantity }}</td>
+            <th class="border border-slate-650">Kind</th>
+            <th class="border border-slate-650">Symbol</th>
+            <th class="border border-slate-650">Price</th>
+            <th class="border border-slate-650">Quantity</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
-</body>
-</html>
+        </thead>
+        <tbody>
+        {% for transaction in transactions %}
+            <tr>
+                <td class="border border-slate-650">{{ transaction.kind }}</td>
+                <td class="border border-slate-650">{{ transaction.symbol }}</td>
+                <td class="border border-slate-650">${{ transaction.price|number_format(2, '.', ' ') }}</td>
+                <td class="border border-slate-650">{{ transaction.quantity }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

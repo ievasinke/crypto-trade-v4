@@ -1,38 +1,35 @@
-{% include 'layouts/app.html.twig' %}
-<body>
-<h1>Currencies</h1>
+{% extends 'layouts/app.html.twig' %}
 
-<table>
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Symbol</th>
-        <th>Price</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for currency in currencies %}
+{% block content %}
+    <h1 class="text-2xl font-bold">Currencies</h1>
+    <table class="border-separate border border-slate-550">
+        <thead>
         <tr>
-
-            <td><a href="/currencies/{{ currency.symbol }}">{{ currency.name }}</a></td>
-            <td><a href="/currencies/{{ currency.symbol }}">{{ currency.symbol }}</a></td>
-            <td>{{ currency.price|number_format(2, '.', ' ') }}</td>
+            <th class="border border-slate-650">Name</th>
+            <th class="border border-slate-650">Symbol</th>
+            <th class="border border-slate-650">Price</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for currency in currencies %}
+            <tr>
 
-<h2>Buy Currency</h2>
-{% include 'buy.html.twig' %}
+                <td class="border border-slate-650"><a
+                            href="/currencies/{{ currency.symbol }}">{{ currency.name }}</a>
+                </td>
+                <td class="border border-slate-650"><a
+                            href="/currencies/{{ currency.symbol }}">{{ currency.symbol }}</a></td>
+                <td class="border border-slate-650">{{ currency.price|number_format(2, '.', ' ') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-<h2>Search Currency</h2>
-<form action="/currency/search" method="POST">
-    <div>
-        <label for="symbol">Currency symbol: </label>
-        <input type="text" id="symbol" name="symbol" required>
-    </div>
-    <button type="submit">Search</button>
-    </td>
-
-</body>
-</html>
+    <form action="/currency/search" method="POST">
+        <div>
+            <label for="symbol">Currency symbol: </label>
+            <input type="text" id="symbol" name="symbol" required class="shadow">
+        </div>
+        <button type="submit" class="bg-sky-500 hover:bg-sky-700">Search</button>
+    </form>
+{% endblock %}

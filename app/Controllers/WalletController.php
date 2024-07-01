@@ -40,15 +40,15 @@ class WalletController
         );
     }
 
-    public function buy(): Response // /currency/buy => /currency/{symbol}/buy
+    public function buy(string $symbol): Response // /currency/buy => /currency/{symbol}/buy
     {
         $user = $this->userRepository->findByUsername('Customer'); //TODO remove
         $userId = $user->getId();
 
-        $symbol = (string)$_POST['symbol'] ?? null;
+//        $symbol = (string)$_POST['symbol'] ?? null;
         $quantity = (int)$_POST['quantity'] ?? null;
 
-        if ($symbol === null || $quantity === null) {
+        if ($quantity === null) { // TODO validate >0
             return new Response(
                 'error',
                 ['message' => 'Invalid input.']
@@ -69,15 +69,15 @@ class WalletController
         }
     }
 
-    public function sell(): Response // /currency/sell => /currency/{symbol}/sell
+    public function sell(string $symbol): Response // /currency/sell => /currency/{symbol}/sell
     {
         $user = $this->userRepository->findByUsername('Customer'); //TODO remove
         $userId = $user->getId();
 
-        $symbol = (string)$_POST['symbol'] ?? null;
+//        $symbol = (string)$_POST['symbol'] ?? null;
         $quantity = (int)$_POST['quantity'] ?? null;
 
-        if ($symbol === null || $quantity === null) {
+        if ($quantity === null) { // TODO validate >0
             return new Response(
                 'error',
                 ['message' => 'Invalid input.']
