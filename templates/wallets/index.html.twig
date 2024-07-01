@@ -1,0 +1,29 @@
+{% include 'layouts/app.html.twig' %}
+
+<body>
+<h1>Wallets</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Symbol</th>
+        <th>Amount</th>
+        <th>Average price</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for wallet in wallets %}
+        <tr>
+            <td>{{ wallet.symbol }}</td>
+            <td>{{ wallet.amount }}</td>
+            <td>${{ wallet.averagePrice|number_format(2, '.', ' ') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>Sell Currency</h2>
+{% include 'sell.html.twig' %}
+
+</body>
+</html>

@@ -14,7 +14,7 @@ class WalletRepository
         $this->database = $database;
     }
 
-    public function getUserWallets(int $userId): array
+    public function getUserWallets($userId): array
     {
         $results = $this->database->findByUserId('wallets', $userId);
         $wallets = [];
@@ -55,6 +55,18 @@ class WalletRepository
                 'average_price' => $averagePrice,
                 'user_id' => $userId
             ],
+        );
+    }
+
+    public function deleteWallet(int $userId, string $symbol): void
+    {
+        $this->database->delete(
+            'wallets',
+            [
+                'user_id' => $userId,
+                'symbol' => $symbol,
+                'amount' => 0
+            ]
         );
     }
 }
