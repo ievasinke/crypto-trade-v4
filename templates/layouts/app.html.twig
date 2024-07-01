@@ -7,8 +7,29 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Welcome to Currency Trading app</title>
+    <style>
+        .ml-35 {
+            margin-left: 35px;
+        }
+    </style>
 </head>
-<body>
-{% block content %}{% endblock %}
+<body class="bg-gray-100">
+<nav class="bg-white">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex-shrink-0">
+                <a href="/" class="text-xl font-bold text-gray-900">Currency Trading App</a>
+            </div>
+            <div class="flex">
+                <a href="/wallets" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Wallet</a>
+                <a href="/transactions"
+                   class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Transactions</a>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container mx-auto px-4 py-6">
+    {% block content %}{% endblock %}
+</div>
 </body>
 </html>

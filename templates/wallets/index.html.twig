@@ -1,22 +1,22 @@
 {% extends 'layouts/app.html.twig' %}
 {% block content %}
-    <h1 class="text-2xl font-bold">Wallets</h1>
-
-    <table class="border-separate border border-slate-550">
+    <h1 class="text-2xl font-bold mb-4">Wallets</h1>
+    <table class="bg-white border-separate border border-slate-500 w-full mb-4">
         <thead>
         <tr>
-            <th class="border border-slate-650">Symbol</th>
-            <th class="border border-slate-650">Amount</th>
-            <th class="border border-slate-650">Average price</th>
+            <th class="border border-slate-600 px-4 py-2">Symbol</th>
+            <th class="border border-slate-600 px-4 py-2">Amount</th>
+            <th class="border border-slate-600 px-4 py-2">Average price</th>
         </tr>
         </thead>
         <tbody>
         {% for wallet in wallets %}
             <tr>
-                <td class="border border-slate-650"><a href="/currencies/{{ wallet.symbol }}">{{ wallet.symbol }}</a>
+                <td class="border border-slate-600 px-4 py-2"><a
+                            href="/currencies/{{ wallet.symbol }}">{{ wallet.symbol }}</a>
                 </td>
-                <td class="border border-slate-650">{{ wallet.amount }}</td>
-                <td class="border border-slate-650">${{ wallet.averagePrice|number_format(2, '.', ' ') }}</td>
+                <td class="border border-slate-600 px-4 py-2">{{ wallet.amount }}</td>
+                <td class="border border-slate-600 px-4 py-2">${{ wallet.averagePrice|number_format(2, '.', ' ') }}</td>
             </tr>
         {% endfor %}
         </tbody>

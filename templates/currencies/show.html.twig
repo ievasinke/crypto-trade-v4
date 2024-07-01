@@ -1,13 +1,17 @@
 {% include 'layouts/app.html.twig' %}
 
 {% block content %}
-    <h1 class="text-2xl font-bold">Currency Details</h1>
-    <p>Name: {{ currency.name }}</p>
-    <p>Symbol: {{ currency.symbol }}</p>
-    <p>Price: {{ currency.price|number_format(2, '.', ' ') }}</p>
+    <div class="p-2 w-full max-w-md ml-35">
+        <h1 class="text-2xl font-bold mb-4">Currency Details</h1>
+        <p class="bg-white mb-2"><span class="font-semibold">Name:</span> {{ currency.name }}</p>
+        <p class="bg-white mb-2"><span class="font-semibold">Symbol:</span> {{ currency.symbol }}</p>
+        <p class="bg-white mb-4"><span
+                    class="font-semibold">Price:</span> {{ currency.price|number_format(2, '.', ' ') }}</p>
 
-    <h2 class="text-xl font-bold">Buy Currency</h2>
-    {% include 'wallets/buy.html.twig' %}
-    <h2 class="text-xl font-bold">Sell Currency</h2>
-    {% include 'wallets/sell.html.twig' %}
+        <h2 class="text-xl font-bold mb-4">Buy Currency</h2>
+        {% include 'wallets/buy.html.twig' %}
+
+        <h2 class="text-xl font-bold mt-8 mb-4">Sell Currency</h2>
+        {% include 'wallets/sell.html.twig' %}
+    </div>
 {% endblock %}
