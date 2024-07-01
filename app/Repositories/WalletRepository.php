@@ -64,8 +64,7 @@ class WalletRepository
             'wallets',
             [
                 'user_id' => $userId,
-                'symbol' => $symbol,
-                'amount' => 0
+                'symbol' => $symbol
             ]
         );
     }
