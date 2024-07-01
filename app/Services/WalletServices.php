@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-//use App\Api\ApiClient;
 use App\Api\CoinmarketApiClient;
 use App\Exceptions\HttpFailedRequestException;
-use App\Models\Wallet;
 use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\WalletRepository;
@@ -13,8 +11,6 @@ use Exception;
 
 class WalletServices
 {
-//    private ApiClient $client;
-//    private SqliteServices $database;
     private CoinmarketApiClient $client;
     private UserRepository $userRepository;
     private WalletRepository $walletRepository;
@@ -28,7 +24,6 @@ class WalletServices
         TransactionRepository $transactionRepository
     )
     {
-//        $this->database = new SqliteServices();
         $this->client = $client;
         $this->userRepository = $userRepository;
         $this->walletRepository = $walletRepository;

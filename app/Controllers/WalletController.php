@@ -23,7 +23,6 @@ class WalletController
         $userRepository = new UserRepository($database);
         $walletRepository = new WalletRepository($database);
         $transactionRepository = new TransactionRepository($database);
-
         $this->walletServices = new WalletServices($client, $userRepository, $walletRepository, $transactionRepository);
         $this->userRepository = $userRepository;
     }
@@ -40,15 +39,14 @@ class WalletController
         );
     }
 
-    public function buy(string $symbol): Response // /currency/buy => /currency/{symbol}/buy
+    public function buy(string $symbol): Response // /currencies/{symbol}/buy
     {
         $user = $this->userRepository->findByUsername('Customer'); //TODO remove
         $userId = $user->getId();
 
-//        $symbol = (string)$_POST['symbol'] ?? null;
         $quantity = (int)$_POST['quantity'] ?? null;
 
-        if ($quantity === null) { // TODO validate >0
+        if ($quantity === null) {
             return new Response(
                 'error',
                 ['message' => 'Invalid input.']
@@ -69,7 +67,7 @@ class WalletController
         }
     }
 
-    public function sell(string $symbol): Response // /currency/sell => /currency/{symbol}/sell
+    public function sell(string $symbol): Response // /currencies/{symbol}/sell
     {
         $user = $this->userRepository->findByUsername('Customer'); //TODO remove
         $userId = $user->getId();
@@ -77,7 +75,7 @@ class WalletController
 //        $symbol = (string)$_POST['symbol'] ?? null;
         $quantity = (int)$_POST['quantity'] ?? null;
 
-        if ($quantity === null) { // TODO validate >0
+        if ($quantity === null) {
             return new Response(
                 'error',
                 ['message' => 'Invalid input.']

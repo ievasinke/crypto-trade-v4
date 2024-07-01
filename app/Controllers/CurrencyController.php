@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Controllers;
 
@@ -51,7 +51,6 @@ class CurrencyController
             } else {
                 throw new Exception('Symbol not provided');
             }
-//            $currency = $this->currencyServices->searchCurrency($symbol);
             header("Location: /currencies/" . $symbol, true, 301);
             return null;
         } catch (Exception $e) {

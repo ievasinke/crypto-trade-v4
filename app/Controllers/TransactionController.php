@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
 use App\Services\TransactionServices;
 use App\Response;
@@ -11,15 +10,13 @@ use App\Services\SqliteServices;
 class TransactionController
 {
     private SqliteServices $database;
-    private TransactionRepository $transactionRepository;
     private TransactionServices $transactionServices;
     private UserRepository $userRepository;
 
     public function __construct()
     {
         $this->database = new SqliteServices();
-        $this->transactionRepository = new TransactionRepository($this->database);
-        $this->transactionServices = new TransactionServices($this->transactionRepository);
+        $this->transactionServices = new TransactionServices();
         $this->userRepository = new UserRepository($this->database);
     }
 
