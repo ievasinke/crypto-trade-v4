@@ -39,7 +39,7 @@ class WalletController
         );
     }
 
-    public function buy(string $symbol): Response // /currencies/{symbol}/buy
+    public function buy(string $symbol): ?Response // /currencies/{symbol}/buy
     {
         $user = $this->userRepository->findByUsername('Customer'); //TODO remove
         $userId = $user->getId();
@@ -55,10 +55,8 @@ class WalletController
 
         try {
             $message = $this->walletServices->buyCurrency($userId, $symbol, $quantity);
-            return new Response(
-                'success',
-                ['message' => $message]
-            );
+            header("Location: /transactions", true, 301);
+            return null;
         } catch (Exception $e) {
             return new Response(
                 'error',
