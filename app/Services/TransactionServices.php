@@ -8,10 +8,9 @@ class TransactionServices
 {
     private TransactionRepository $transactionRepository;
 
-    public function __construct()
+    public function __construct(TransactionRepository $transactionRepository)
     {
-        $database = new SqliteServices();
-        $this->transactionRepository = new TransactionRepository($database);
+        $this->transactionRepository = $transactionRepository;
     }
 
     public function getTransactions(): array

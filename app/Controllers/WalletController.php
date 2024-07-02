@@ -16,14 +16,9 @@ class WalletController
     private WalletServices $walletServices;
     private UserRepository $userRepository;
 
-    public function __construct()
+    public function __construct(WalletServices $walletServices, UserRepository $userRepository)
     {
-        $database = new SqliteServices();
-        $client = new CoinmarketApiClient();
-        $userRepository = new UserRepository($database);
-        $walletRepository = new WalletRepository($database);
-        $transactionRepository = new TransactionRepository($database);
-        $this->walletServices = new WalletServices($client, $userRepository, $walletRepository, $transactionRepository);
+        $this->walletServices = $walletServices;
         $this->userRepository = $userRepository;
     }
 

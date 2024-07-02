@@ -14,10 +14,13 @@ $user = (new UserRepository(new SqliteServices()))->findByUsername('Customer');
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+
 $loader = new FilesystemLoader(__DIR__ . '/templates');
 $twig = new Environment($loader, [
     'cache' => false,
 ]);
+
+$container = require 'phpDi.php';
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $routes = include('routes.php');
@@ -51,7 +54,7 @@ switch ($routeInfo[0]) {
         $vars = $routeInfo[2];
         [$controller, $method] = $handler;
         // ... call $handler with $vars
-        $controllerInstance = new $controller();
+        $controllerInstance = $container->get($controller);
 
         /** @var \App\Response $response */
         $response = $controllerInstance->$method(...array_values($vars));

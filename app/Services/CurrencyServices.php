@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Api\CoinmarketApiClient;
+use App\Api\ApiClient;
 use App\Exceptions\HttpFailedRequestException;
 use App\Models\Currency;
 use Exception;
 
 class CurrencyServices
 {
-    private CoinmarketApiClient $client;
+    private ApiClient $client;
 
-    public function __construct(CoinmarketApiClient $client)
+    public function __construct(ApiClient $client)
     {
         $this->client = $client;
     }

@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Api\CoinmarketApiClient;
 use App\Services\CurrencyServices;
 use App\Response;
 use Exception;
@@ -11,10 +10,9 @@ class CurrencyController
 {
     private CurrencyServices $currencyServices;
 
-    public function __construct()
+    public function __construct(CurrencyServices $currencyServices)
     {
-        $client = new CoinmarketApiClient();
-        $this->currencyServices = new CurrencyServices($client);
+        $this->currencyServices = $currencyServices;
     }
 
     public function index(): Response // /index

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Api\CoinmarketApiClient;
+use App\Api\ApiClient;
 use App\Exceptions\HttpFailedRequestException;
 use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
@@ -11,14 +11,14 @@ use Exception;
 
 class WalletServices
 {
-    private CoinmarketApiClient $client;
+    private ApiClient $client;
     private UserRepository $userRepository;
     private WalletRepository $walletRepository;
     private TransactionRepository $transactionRepository;
 
 
     public function __construct(
-        CoinmarketApiClient   $client,
+        ApiClient             $client,
         UserRepository        $userRepository,
         WalletRepository      $walletRepository,
         TransactionRepository $transactionRepository
