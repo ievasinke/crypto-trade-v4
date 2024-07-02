@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Repositories\UserRepository;
 use App\Services\TransactionServices;
 use App\Response;
 
@@ -9,9 +10,12 @@ class TransactionController
 {
     private TransactionServices $transactionServices;
 
-    public function __construct(TransactionServices $transactionServices)
+    private UserRepository $userRepository;
+
+    public function __construct(TransactionServices $transactionServices, UserRepository $userRepository)
     {
         $this->transactionServices = $transactionServices;
+        $this->userRepository = $userRepository;
     }
 
     public function index(): Response

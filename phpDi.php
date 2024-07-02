@@ -24,11 +24,13 @@ $containerBuilder->addDefinitions([
         DI\get(ApiClient::class)
     ),
     SqliteServices::class => DI\autowire(),
-    TransactionController::class => DI\autowire()->constructor(
-        DI\get(TransactionServices::class)
-    ),
+    TransactionController::class => DI\autowire()->constructor(DI\get(
+        TransactionServices::class,
+        UserRepository::class
+    )),
     TransactionRepository::class => DI\autowire()->constructor(DI\get(
-        SqliteServices::class
+        SqliteServices::class,
+        UserRepository::class
     )),
     TransactionServices::class => DI\autowire()->constructor(DI\get(
         TransactionRepository::class
