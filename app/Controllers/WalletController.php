@@ -2,12 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Api\CoinmarketApiClient;
-use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
-use App\Repositories\WalletRepository;
 use App\Response;
-use App\Services\SqliteServices;
 use App\Services\WalletServices;
 use Exception;
 
@@ -16,7 +12,10 @@ class WalletController
     private WalletServices $walletServices;
     private UserRepository $userRepository;
 
-    public function __construct(WalletServices $walletServices, UserRepository $userRepository)
+    public function __construct(
+        WalletServices $walletServices,
+        UserRepository $userRepository
+    )
     {
         $this->walletServices = $walletServices;
         $this->userRepository = $userRepository;

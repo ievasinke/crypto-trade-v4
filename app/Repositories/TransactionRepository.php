@@ -11,7 +11,10 @@ class TransactionRepository
     private SqliteServices $database;
     private UserRepository $userRepository;
 
-    public function __construct(SqliteServices $database, UserRepository $userRepository)
+    public function __construct(
+        SqliteServices $database,
+        UserRepository $userRepository
+    )
     {
         $this->database = $database;
         $this->userRepository = $userRepository;

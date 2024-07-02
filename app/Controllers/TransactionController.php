@@ -12,7 +12,10 @@ class TransactionController
 
     private UserRepository $userRepository;
 
-    public function __construct(TransactionServices $transactionServices, UserRepository $userRepository)
+    public function __construct(
+        TransactionServices $transactionServices,
+        UserRepository      $userRepository
+    )
     {
         $this->transactionServices = $transactionServices;
         $this->userRepository = $userRepository;
