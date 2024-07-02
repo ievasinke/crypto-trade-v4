@@ -2,25 +2,24 @@
 
 namespace App\Services;
 
-use App\Api\ApiClient;
-use App\Exceptions\HttpFailedRequestException;
 use App\Models\Currency;
+use App\Repositories\CurrencyRepository;
 use Exception;
 
 class CurrencyServices
 {
-    private ApiClient $client;
+    private CurrencyRepository $currencyRepository;
 
-    public function __construct(ApiClient $client)
+    public function __construct(CurrencyRepository $currencyRepository)
     {
-        $this->client = $client;
+        $this->currencyRepository = $currencyRepository;
     }
 
     public function fetchCurrencies(): array
     {
         try {
-            return $this->client->fetchCurrencyData();
-        } catch (HttpFailedRequestException $e) {
+            return $this->currencyRepository->fetchAll();
+        } catch (Exception $e) {
             throw new Exception('Failed to fetch currencies', 0, $e);
         }
     }
@@ -28,12 +27,12 @@ class CurrencyServices
     public function searchCurrency(string $symbol): Currency
     {
         try {
-            $currency = $this->client->searchCurrencyBySymbol($symbol);
+            $currency = $this->currencyRepository->findBySymbol($symbol);
             if ($currency === null) {
                 throw new Exception('Currency not found for symbol ' . $symbol);
             }
             return $currency;
-        } catch (HttpFailedRequestException $e) {
+        } catch (Exception $e) {
             throw new Exception('Failed to search currency', 0, $e);
         }
     }

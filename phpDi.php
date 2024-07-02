@@ -4,6 +4,7 @@ use App\Api\ApiClient;
 use App\Api\CoinmarketApiClient;
 use App\Controllers\TransactionController;
 use App\Controllers\WalletController;
+use App\Repositories\CurrencyRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\WalletRepository;
@@ -19,10 +20,12 @@ $containerBuilder->addDefinitions([
     ApiClient::class => DI\autowire(
         CoinmarketApiClient::class
     ),
-    CurrencyServices::class => DI\autowire()->constructorParameter(
-        'client',
-        DI\get(ApiClient::class)
-    ),
+    CurrencyRepository::class => DI\autowire()->constructor(DI\get(
+        ApiClient::class
+    )),
+    CurrencyServices::class => DI\autowire()->constructor(DI\get(
+        CurrencyRepository::class
+    )),
     SqliteServices::class => DI\autowire(),
     TransactionController::class => DI\autowire()->constructor(DI\get(
         TransactionServices::class,
